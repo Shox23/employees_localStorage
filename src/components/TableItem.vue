@@ -1,7 +1,7 @@
 <template>
   <li class="table-item" :class="data.subordinates ? ' active' : ''">
     <div class="table-item__content" @click="isOpen = !isOpen">
-      <div class="table-item__cell" :class="subordinate ? ' extra' : ''">
+      <div class="table-item__cell" :style="{ left: initialGap + 'px' }">
         <span
           class="table-item__indicator"
           :class="isOpen ? ' active' : ''"
@@ -21,29 +21,31 @@
     >
       <ul class="table-item__list" v-if="data.subordinates && isOpen">
         <TableItem
+          :gap="initialGap + 15"
           :subordinate="true"
           v-for="item in data.subordinates"
           :data="item"
           :key="item.name"
         />
-        <!-- <li v-for="item in data.subordinates">
-          <div class="table-item__content">
-            <div class="table-item__cell">{{ item.name }}</div>
-            <div class="table-item__cell">{{ item.phone }}</div>
-          </div>
-        </li> -->
       </ul>
     </Transition>
   </li>
 </template>
 
 <script lang="ts" setup>
-import { ref, Ref } from "vue";
+import { onMounted, ref, Ref } from "vue";
 import { afterEnter, enter, leave } from "../utils/functions";
 import { TableItemProps } from "../utils/Models";
 
-defineProps<TableItemProps>();
+const props = defineProps<TableItemProps>();
 const isOpen: Ref<boolean> = ref<boolean>(false);
+const initialGap: Ref<number> = ref<number>(0);
+
+onMounted(() => {
+  if (props.gap) {
+    initialGap.value += props.gap;
+  }
+});
 </script>
 
 <style>
@@ -83,9 +85,5 @@ const isOpen: Ref<boolean> = ref<boolean>(false);
   padding: 4px 8px;
   background: #fff;
   position: relative;
-}
-
-.table-item__cell.extra {
-  left: 15px;
 }
 </style>

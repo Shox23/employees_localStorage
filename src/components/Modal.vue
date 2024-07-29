@@ -44,7 +44,7 @@ import { Employee, ModalEmits, ModalProps } from "../utils/Models";
 import CustomButton from "./CustomButton.vue";
 import CustomInput from "./CustomInput.vue";
 import CustomSelect from "./CustomSelect.vue";
-import { createEmployee, employeeList } from "../utils/functions";
+import { addNewEmployee, employeeList } from "../utils/functions";
 
 defineProps<ModalProps>();
 const emits = defineEmits<ModalEmits>();
@@ -73,9 +73,11 @@ const addEmployee = () => {
     id: Date.now(),
     name: nameValue.value,
     phone: phoneValue.value,
-    bossId: bossId.value ?? bossId.value,
   };
-  createEmployee(data);
+  if (bossId.value) {
+    data.bossId = bossId.value;
+  }
+  addNewEmployee(data);
   clearInputs();
 };
 

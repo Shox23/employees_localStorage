@@ -42,4 +42,5 @@ export interface SelectEmits {
 export interface TableItemProps {
   data: Employee;
   subordinate: boolean;
+  gap?: number;
 }

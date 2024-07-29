@@ -7,30 +7,44 @@ export const employeeList: Ref<Employee[]> = ref<Employee[]>(
 
 export const allEmployees: Ref<Employee[]> = ref<Employee[]>([]);
 
-export const extractAllEmployees = () => {
-  allEmployees.value = [];
-  if (localStorage.employees) {
-    let employees: Employee[] = JSON.parse(localStorage.employees);
-    employees.forEach((item) => {
-      if (item.subordinates) {
-        allEmployees.value.push(...item.subordinates);
+export const extractAllEmployees = (list: Employee[]) => {
+  let result: Employee[] = [];
+  function traverse(employeeList: Employee[]) {
+    for (const employee of employeeList) {
+      result.push(employee);
+      if (employee.subordinates && employee.subordinates.length > 0) {
+        traverse(employee.subordinates);
       }
-      allEmployees.value.push(item);
-    });
+    }
   }
-  console.log(allEmployees.value);
+
+  traverse(list);
+
+  allEmployees.value = result;
 };
 
-export const createEmployee = (data: Employee) => {
+export const iterateArray = (list: Employee[], data: Employee): Employee[] => {
+  for (let el = 0; el < list.length; el++) {
+    if (data.bossId === list[el].id) {
+      if (list[el].subordinates) {
+        list[el].subordinates?.push(data);
+      } else {
+        list[el].subordinates = [data];
+      }
+    }
+    if (list[el].subordinates) {
+      let array = list[el].subordinates;
+      iterateArray(array, data);
+    }
+  }
+  return list;
+};
+
+export const addNewEmployee = (data: Employee) => {
   if (localStorage.employees) {
     let employees: Employee[] = JSON.parse(localStorage.employees);
     if (data.bossId) {
-      let boss = employees.findIndex((item) => item.id === data.bossId);
-      if (employees[boss].subordinates) {
-        employees[boss].subordinates.push(data);
-      } else {
-        employees[boss].subordinates = [data];
-      }
+      employees = iterateArray(employees, data);
     } else {
       employees.push(data);
     }
@@ -42,8 +56,7 @@ export const createEmployee = (data: Employee) => {
     localStorage.employees = JSON.stringify(employees);
     employeeList.value = employees;
   }
-
-  extractAllEmployees();
+  extractAllEmployees(employeeList.value);
 };
 
 export const enter = (element: Element) => {
