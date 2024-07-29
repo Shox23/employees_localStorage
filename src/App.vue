@@ -14,10 +14,7 @@
 import { onMounted, Ref, ref } from "vue";
 import MainTable from "./components/MainTable.vue";
 import Modal from "./components/Modal.vue";
-import {
-  employeeList,
-  extractAllEmployees,
-} from "./utils/functions";
+import { employeeList, extractAllEmployees } from "./utils/functions";
 
 const modalOpen: Ref<boolean> = ref<boolean>(false);
 
